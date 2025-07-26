@@ -190,7 +190,8 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
                 #[doc = #doc]
                 #[must_use]
                 pub fn #fn_name<'a, Theme: Catalog + 'a, Renderer: text::Renderer<Font = Font>>() -> Text<'a, Theme, Renderer> {
-                    iced_widget::text(#c).font(#font_name).#shaping
+                    use iced_widget::text;
+                    text(#c).font(#font_name).#shaping
                 }
             });
 
@@ -203,6 +204,7 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
 
     let count_lit = LitInt::new(&count.to_string(), Span::call_site());
     TokenStream::from(quote! {
+        #[doc = "A machine generated module of font icons that create text widgets."]
         pub mod #module_name {
             use iced_widget::core::text;
             use iced_widget::core::Font;
