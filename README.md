@@ -32,9 +32,8 @@ fn view(&self) -> Element<Message> {
 </p>
 
 Include `iced_fonts` as a dependency in your `Cargo.toml`:
-```toml
-[dependencies]
-iced_fonts = { version = "0.2.0", features = [...] }
+```sh
+cargo add iced_fonts --features=full
 ```
 
 ## Versioning
@@ -64,6 +63,9 @@ The Following are a link to the source followed by their feature flag name.
 ### Bring your own Font!
 One problem people bring up is that they only need a few icons. So the macro used by this library is exported for public use. See the `custom` example.
 
+### Advanced Primitives
+Enabling the `advanced_text` feature will give access to functions to help you construct advanced `Text` types to use in widgets.
+
 ### Failed fonts.
 Saddly some fonts are not supported because they are not given proper names in the `post` table. This is a failure of the font author and there is nothing we can do about these. We cannot generate/lookup names that are not in the font. The currently list of these follows
 
@@ -79,3 +81,4 @@ Somethings that need to be done are.
 1. Use basic shaping where possible, we shouldn't pay a fee we aren't required to.
 2. Add more useful fonts if possible, this depends on if they have properly setup tables.
 3. Look into svg support. Once a demo is done it's easy to make a proc macro for it.
+4. Do magic `$crate::` non sense to remove macro callsite requirement on `iced_widget`. 

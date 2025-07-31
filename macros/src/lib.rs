@@ -85,6 +85,7 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
     }
 
     let mut functions = proc_macro2::TokenStream::new();
+    let mut advanced_functions = proc_macro2::TokenStream::new();
     let mut duplicates: HashMap<String, u32> = HashMap::new();
     let mut count = 0;
 
@@ -162,24 +163,24 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
 
             let doc = match doc_link {
                 Some(ref location) => format!(
-                    " Returns an [`iced`] [`iced_widget::Text`] widget of the [{} {}]({}/{}) icon.",
+                    " Returns an [`iced_widget::Text`] widget of the [{} {}]({}/{}) icon.",
                     c,
                     processed_name,
                     location.value(),
                     raw_name,
                 ),
                 None => format!(
-                    " Returns an [`iced`] [`iced_widget::Text`] widget of the {} {} icon.",
+                    " Returns an [`iced_widget::Text`] widget of the {} {} icon.",
                     c, processed_name
                 ),
             };
 
             let shaping = match advanced_shaping.value().as_str() {
                 "basic" => {
-                    quote! { shaping(text::Shaping::Basic) }
+                    quote! { text::Shaping::Basic }
                 }
                 "advanced" => {
-                    quote! { shaping(text::Shaping::Advanced) }
+                    quote! { text::Shaping::Advanced }
                 }
                 _ => panic!(
                     "Shaping either needs to be basic or advanced, if you are unsure use advanced."
@@ -191,7 +192,19 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
                 #[must_use]
                 pub fn #fn_name<'a, Theme: Catalog + 'a, Renderer: text::Renderer<Font = Font>>() -> Text<'a, Theme, Renderer> {
                     use iced_widget::text;
-                    text(#c).font(#font_name).#shaping
+                    text(#c).font(#font_name).shaping(#shaping)
+                }
+            });
+
+            let doc = format!(
+                " Returns the [`String`] of {} character for lower level API's",
+                processed_name
+            );
+            advanced_functions.extend(quote! {
+                #[doc = #doc]
+                #[must_use]
+                pub fn #fn_name() -> (String, Font, Shaping) {
+                    (#c.to_string(), #font_name, #shaping)
                 }
             });
 
@@ -202,9 +215,38 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
     #[cfg(feature = "_generate_demo")]
     println!("We have {} icons", count);
 
+    let mut advanced_text_tokens = quote! {};
+    if cfg!(feature = "advanced_text") {
+        advanced_text_tokens = quote! {
+          /// Every icon with helpers to use these icons in widgets.
+          ///
+          /// Usage
+          /// ```
+          /// let (content, font, shaping) = advanced_text::my_icon();
+          ///
+          /// advanced::Text {
+          ///     content,
+          ///     font,
+          ///     shaping,
+          ///     ...
+          /// }
+          /// ```
+          pub mod advanced_text {
+              use iced_widget::core::Font;
+              use iced_widget::text::{self, Shaping};
+              use crate::#font_name;
+
+              #advanced_functions
+          }
+        };
+    }
     let count_lit = LitInt::new(&count.to_string(), Span::call_site());
+    let doc = format!(
+        "A module with a function for every icon in {}'s font.",
+        module_name.to_string()
+    );
     TokenStream::from(quote! {
-        #[doc = "A machine generated module of font icons that create text widgets."]
+        #[doc = #doc]
         pub mod #module_name {
             use iced_widget::core::text;
             use iced_widget::core::Font;
@@ -216,6 +258,9 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
             pub const COUNT: usize = #count_lit;
 
             #functions
+
+            #advanced_text_tokens
+
         }
     })
 }

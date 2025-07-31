@@ -11,8 +11,11 @@ categories.workspace = true
 readme.workspace = true
 authors.workspace = true
 
+[package.metadata.docs.rs] 
+all-features = true
+
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0-dev"
 edition = "2024"
 license = "MIT"
 homepage = "https://iced.rs"
@@ -24,6 +27,7 @@ authors = [ "Redhawk18" ]
 
 [features]
 default = []
+advanced_text = ["iced_fonts_macros/advanced_text"]
 bootstrap = []
 codicon = []
 devicon = []
@@ -70,10 +74,6 @@ ttf-parser = "0.25"
 iced = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
 iced_core = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
 iced_widget = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
-
-[package.metadata.docs.rs]
-features = ["full"]
-rustdoc-args = ["--document-private-items"]
 
 [[example]]
 name = "bootstrap"

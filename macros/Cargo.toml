@@ -13,6 +13,7 @@ authors.workspace = true
 [features]
 # default = ["_generate_demo"]
 default = []
+advanced_text = []
 _generate_demo = []
 
 [lib]
