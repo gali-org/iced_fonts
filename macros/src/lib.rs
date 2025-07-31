@@ -4,64 +4,65 @@ use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
 use syn::{
-    LitInt, LitStr, Token,
+    LitInt, LitStr,
     parse::{Parse, ParseStream},
     parse_macro_input,
+    token::Comma,
 };
 use ttf_parser::Face;
 
-struct MacroInput {
+struct Input {
     /// e.g. `"fonts/bootstrap-icons-new.ttf"`
     font_path: LitStr,
     /// e.g. `bootstrap`
     module_name: Ident,
     /// e.g. `"BOOTSTRAP_FONT"`
     font_name: Ident,
-    /// e.g. `basic`
-    advanced_shaping: LitStr,
     /// e.g. `https://icons.getbootstrap.com/icons`
     doc_link: Option<LitStr>,
 }
 
-impl Parse for MacroInput {
+impl Parse for Input {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
         let font_path = input.parse()?;
-        let _: Token![,] = input.parse()?;
+        let _: Comma = input.parse()?;
         let module_name = input.parse()?;
-        let _: Token![,] = input.parse()?;
+        let _: Comma = input.parse()?;
         let font_name = input.parse()?;
-        let _: Token![,] = input.parse()?;
-        let advanced_shaping = input.parse()?;
 
         // It is good-mannered to accept an optional trailing comma
-        let _: Option<Token![,]> = input.parse()?;
+        let _: Option<Comma> = input.parse()?;
         let doc_link = input.parse()?;
-        let _: Option<Token![,]> = input.parse()?;
+        let _: Option<Comma> = input.parse()?;
 
         Ok(Self {
             font_path,
             module_name,
             font_name,
-            advanced_shaping,
             doc_link,
         })
     }
 }
 
 /// Generates a module with functions that create text widgets.
-/// 1. Parameter &str font path
-/// 2. Parameter literal name for the module the macro creates.
-/// 3. Parameter literal name of the font created one line above.
-/// 4. Optional parameter &str of where documenation exists for this font.
 #[proc_macro]
 pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
-    let MacroInput {
+    body(input, "basic")
+}
+
+/// Generates a module with functions that create text widgets with advanced shaping.
+#[proc_macro]
+pub fn generate_icon_advanced_functions(input: TokenStream) -> TokenStream {
+    body(input, "advanced")
+}
+
+fn body(input: TokenStream, shaping: &str) -> TokenStream {
+    let Input {
         font_path,
         module_name,
         font_name,
-        advanced_shaping,
         doc_link,
-    } = parse_macro_input!(input as MacroInput);
+    } = parse_macro_input!(input as Input);
 
     let font_path_str = font_path.value();
     let font_data = std::fs::read(&font_path_str).expect("Failed to read font file");
@@ -175,7 +176,7 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
                 ),
             };
 
-            let shaping = match advanced_shaping.value().as_str() {
+            let shaping = match shaping {
                 "basic" => {
                     quote! { text::Shaping::Basic }
                 }
@@ -215,9 +216,8 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
     #[cfg(feature = "_generate_demo")]
     println!("We have {} icons", count);
 
-    let mut advanced_text_tokens = quote! {};
-    if cfg!(feature = "advanced_text") {
-        advanced_text_tokens = quote! {
+    let advanced_text_tokens = if cfg!(feature = "advanced_text") {
+        quote! {
           /// Every icon with helpers to use these icons in widgets.
           ///
           /// Usage
@@ -238,8 +238,11 @@ pub fn generate_icon_functions(input: TokenStream) -> TokenStream {
 
               #advanced_functions
           }
-        };
-    }
+        }
+    } else {
+        quote! {}
+    };
+
     let count_lit = LitInt::new(&count.to_string(), Span::call_site());
     let doc = format!(
         "A module with a function for every icon in {}'s font.",
