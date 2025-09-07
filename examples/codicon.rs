@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{CODICON_FONT_BYTES, codicon::*};
 
 pub fn main() -> iced::Result {
-    iced::application("codicon", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("codicon").run()
 }
 
 #[derive(Default)]

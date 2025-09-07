@@ -21,7 +21,7 @@ pub const ICED_AW_FONT: Font = Font::with_name("iced_aw");
 generate_icon_functions!("fonts/iced_aw.ttf", iced_aw_font, ICED_AW_FONT, "basic");
 
 pub fn main() -> iced::Result {
-    iced::application("Custom Font", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("Custom Font").run()
 }
 
 #[derive(Default)]

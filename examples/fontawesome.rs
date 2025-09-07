@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{FONTAWESOME_FONT_BYTES, fontawesome::*};
 
 pub fn main() -> iced::Result {
-    iced::application("fontawesome", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("fontawesome").run()
 }
 
 #[derive(Default)]

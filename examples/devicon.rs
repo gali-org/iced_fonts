@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{DEVICON_FONT_BYTES, devicon::*};
 
 pub fn main() -> iced::Result {
-    iced::application("devicon", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("devicon").run()
 }
 
 #[derive(Default)]

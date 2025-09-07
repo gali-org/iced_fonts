@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{BOOTSTRAP_FONT_BYTES, bootstrap::*};
 
 pub fn main() -> iced::Result {
-    iced::application("Bootstrap", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("Bootstrap").run()
 }
 
 #[derive(Default)]

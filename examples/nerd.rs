@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{NERD_FONT_BYTES, nerd::*};
 
 pub fn main() -> iced::Result {
-    iced::application("nerd", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("nerd").run()
 }
 
 #[derive(Default)]

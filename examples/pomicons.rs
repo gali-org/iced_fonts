@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{POMICONS_FONT_BYTES, pomicons::*};
 
 pub fn main() -> iced::Result {
-    iced::application("pomicons", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("pomicons").run()
 }
 
 #[derive(Default)]

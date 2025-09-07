@@ -71,9 +71,9 @@ ttf-parser = "0.25"
 
 
 [patch.crates-io]
-iced = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
-iced_core = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
-iced_widget = { git = "https://github.com/iced-rs/iced.git", rev = "beddf49c" }
+iced = { git = "https://github.com/gali-org/iced.git", rev = "825076fefe8759b5cbbaddfd2f3f66dce3f81e87" }
+iced_core = { git = "https://github.com/gali-org/iced.git", rev = "825076fefe8759b5cbbaddfd2f3f66dce3f81e87" }
+iced_widget = { git = "https://github.com/gali-org/iced.git", rev = "825076fefe8759b5cbbaddfd2f3f66dce3f81e87" }
 
 [[example]]
 name = "bootstrap"

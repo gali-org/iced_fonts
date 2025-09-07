@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{OCTICONS_FONT_BYTES, octicons::*};
 
 pub fn main() -> iced::Result {
-    iced::application("octicons", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("octicons").run()
 }
 
 #[derive(Default)]

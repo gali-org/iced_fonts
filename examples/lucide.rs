@@ -7,7 +7,7 @@ use iced::{
 use iced_fonts::{LUCIDE_FONT_BYTES, lucide::*};
 
 pub fn main() -> iced::Result {
-    iced::application("Lucide", App::update, App::view).run_with(App::new)
+    iced::application(App::new, App::update, App::view).title("Lucide").run()
 }
 
 #[derive(Default)]
